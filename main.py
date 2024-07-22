@@ -1,14 +1,20 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-
-from Model import Keyword, Step, Module, Lesson, StepKeyword
+from models import Keyword, Step, StepKeyword, Module, Lesson
 from config import Settings
 
+# Загрузка переменных окружения из .env файла
+load_dotenv()
+
+# Инициализация настроек из файла конфигурации
 settings = Settings()
 
-
+# Создание двигателя (engine) для базы данных PostgreSQL
 engine = create_engine(settings.DATABASE_URL_asyncpg)
 
+# Создание фабрики сессий
 Session = sessionmaker(bind=engine)
 session = Session()
 
