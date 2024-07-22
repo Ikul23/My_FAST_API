@@ -8,3 +8,11 @@
 # 2. Создать модельки алхимии, продумать какие должны быть связи между таблицами;
 # 3. Написать код для наполнения базы;
 # 4. Написать запросы на получение данных с использование relationship.
+
+from sqlalchemy import engine
+import config
+
+
+
+engine = engine(config.Settings.DATABASE_URL_asyncpg) #подключение БД через путь
+Base.metadata.create_all(engine)
