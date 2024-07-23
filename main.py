@@ -1,67 +1,58 @@
-import os
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import sessionmaker
-from models import Keyword, Step, StepKeyword, Module, Lesson
-from config import Settings
+import asyncio
+from sqlalchemy import select
+from db import AsyncSessionLocal
+from models import Keyword, Step, Module, Lesson
 
-# Загрузка переменных окружения из .env файла
-load_dotenv()
+async def list_modules():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Module))
+        modules = result.scalars().all()
+        for module in modules:
+            print(module)
 
-# Инициализация настроек из файла конфигурации
-settings = Settings()
+async def list_lessons():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Lesson))
+        lessons = result.scalars().all()
+        for lesson in lessons:
+            print(lesson)
 
-# Создание двигателя (engine) для базы данных PostgreSQL
-engine = create_engine(settings.DATABASE_URL_asyncpg)
+async def list_steps():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Step))
+        steps = result.scalars().all()
+        for step in steps:
+            print(step)
 
-# Создание фабрики сессий
-Session = sessionmaker(bind=engine)
-session = Session()
+async def list_keywords():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Keyword))
+        keywords = result.scalars().all()
+        for keyword in keywords:
+            print(keyword)
 
-def list_modules():
-    modules = session.scalars(select(Module)).all()
-    for module in modules:
-        print(module)
-
-def list_lessons():
-    lessons = session.scalars(select(Lesson)).all()
-    for lesson in lessons:
-        print(lesson)
-
-def list_steps():
-    steps = session.scalars(select(Step)).all()
-    for step in steps:
-        print(step)
-
-def list_keywords():
-    keywords = session.scalars(select(Keyword)).all()
-    for keyword in keywords:
-        print(keyword)
-
-def main():
+async def main():
     while True:
         print("\nМеню:")
-        print("1. Список модулей")
-        print("2. Список уроков")
-        print("3. Список шагов")
-        print("4. Список ключевых слов")
+        print("1. Название таблицы: Список модулей")
+        print("2. Название таблицы: Список уроков")
+        print("3. Название таблицы: Список шагов")
+        print("4. Название таблицы: Список ключевых слов")
         print("5. Выход")
         choice = input("Выберите опцию: ")
 
         if choice == "1":
-            list_modules()
+            await list_modules()
         elif choice == "2":
-            list_lessons()
+            await list_lessons()
         elif choice == "3":
-            list_steps()
+            await list_steps()
         elif choice == "4":
-            list_keywords()
+            await list_keywords()
         elif choice == "5":
             break
         else:
             print("Неверный выбор. Попробуйте снова.")
 
-    session.close()
-
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
